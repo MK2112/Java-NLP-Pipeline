@@ -1,31 +1,34 @@
 package org.example;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 /**
  * Utilizing these sources:
  * http://opennlp.sourceforge.net/models-1.5/
  * https://github.com/Ruthwik/Language-Detection
  * https://stackoverflow.com/questions/4570751/what-tag-set-is-used-in-opennlps-german-maxent-model
+ * https://www.sketchengine.eu/german-stts-part-of-speech-tagset/
  */
 public class App 
 {
     public static void main( String[] args ) {
-        LanguageTagger lt = new LanguageTagger();
-        Tokenizer tk = new Tokenizer();
-        POSTagger pos = new POSTagger();
+        LanguageTagger languageTagger = new LanguageTagger();
+        Tokenizer tokenizer = new Tokenizer();
+        POSTagger posTagger = new POSTagger();
 
         // a simple dummy pipeline
-        String text = "Das ist ein Test.";
+        String text = "Das ist ein Test. Das ist ein Test, der um viele Ebenen komplexer ist.";
+
+        // desired output: {[Test, [Das, ein]],[Test, [Das, ein, der]],[Ebenen]}
 
         try {
-            String language = lt.run(text);
-            String[] tokens = tk.run(language, text);
-            HashMap<Integer, String> nouns = pos.run(language, tokens);
+            String language = languageTagger.run(text);
+            String[] tokens = tokenizer.run(language, text);
+            String[] tags = posTagger.run(language, tokens);
 
-            for (Integer key: nouns.keySet()) {
-                System.out.println(nouns.get(key));
+            for (int i = 0; i < tokens.length; i++) {
+                System.out.print(tokens[i] + " - ");
+                System.out.print(tags[i]+ "\n");
             }
 
         } catch (IOException e) {
